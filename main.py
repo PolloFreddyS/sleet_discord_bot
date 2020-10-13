@@ -1,4 +1,6 @@
 import os
+import asyncio
+from bot_functions import server_management
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 bot_token = os.getenv("BOT_TOKEN")
@@ -9,25 +11,17 @@ bot = commands.Bot(command_prefix="!")
 @bot.command()
 @has_permissions(administrator=True)
 async def muteall(ctx):
-    channel_requested = ctx.author.voice.channel
-    all_channel_members = ctx.channel.members
-    for i in range(len(all_channel_members)):
-        if not all_channel_members[i].bot:
-            if all_channel_members[i].voice is not None:
-                if all_channel_members[i].voice.channel == channel_requested:
-                    await all_channel_members[i].edit(mute=True)
+    mute_list = server_management.mute_members(ctx)
+    for mute_member in mute_list:
+        await mute_member
 
 
 @bot.command()
 @has_permissions(administrator=True)
 async def unmuteall(ctx):
-    channel_requested = ctx.author.voice.channel
-    all_channel_members = ctx.channel.members
-    for i in range(len(all_channel_members)):
-        if not all_channel_members[i].bot:
-            if all_channel_members[i].voice is not None:
-                if all_channel_members[i].voice.channel == channel_requested:
-                    await all_channel_members[i].edit(mute=False)
+    mute_list = server_management.unmute_members(ctx)
+    for mute_member in mute_list:
+        await mute_member
 
 
 @bot.command()
